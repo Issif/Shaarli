@@ -1,5 +1,6 @@
 <?php
 // Shaarli 0.0.41 beta - Shaare your links...
+// LDAP authentication fork
 // The personal, minimalist, super-fast, no-database delicious clone. By sebsauvage.net
 // http://sebsauvage.net/wiki/doku.php?id=php:shaarli
 // Licence: http://www.opensource.org/licenses/zlib-license.php
