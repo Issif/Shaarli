@@ -295,10 +295,57 @@ function allIPs()
     return $ip;
 }
 
+// LDAP Authentication function
+function authenticate($user_login,$user_password) {
+    // Connection to ldap server
+    $link = ldap_connect($ldap_server, 389) or die("Can't connect to ldap server\n");
+    // Options setting
+    ldap_set_option($link, LDAP_OPT_PROTOCOL_VERSION, 3) or die("Can't change options\n");
+    // Bind ldap server
+    if(ldap_bind($link, $ldap_manager, $ldap_manager_pwd) == false) die("Can't bind ldap server");
+    
+    // Search into ldap
+    $search = ldap_search($link, $ldap_basedn, $filter);
+    if (!$search) {
+        echo("Can't search in ldap\n");
+        echo("msg:'".ldap_error($link)."'\n");
+        ldap_close($link);
+        exit();
+    	}
+
+    // Get entries
+    $entries = ldap_get_entries($link, $search);
+
+    // Check entry number (if > 1 then NOK)
+    if ($entries['count']) {
+        if($entries['count'] > 1) {
+            die("More than one entry in ldap for $user_login");
+        }
+    }
+
+    // Get entry with index 0
+    $entry = $entries[0];
+    // Get DN of our found user
+    $found_dn=$entry['dn']; 
+
+    // Try to bind the ldap with DN and user password
+    $attempt = @ldap_bind($link, $found_dn, $user_password);
+    if ($attempt) {
+        // If bind is OK then unbind and close connection, return TRUE
+        ldap_close($link);
+        return true;
+        }
+    else {
+        // If bind is NOK, close connection, return FALSE
+        ldap_close($link);
+        return false;
+        }
+}
+
 // Check that user/password is correct.
 function check_auth($login,$password)
 {
-    $hash = sha1($password.$login.$GLOBALS['salt']);
+    $auth_attempt = LDAP_authentication($login,$password)
     if ($login==$GLOBALS['login'] && $hash==$GLOBALS['hash'])
     {   // Login/password is correct.
         $_SESSION['uid'] = sha1(uniqid('',true).'_'.mt_rand()); // generate unique random number (different than phpsessionid)
@@ -2242,7 +2289,7 @@ function processWS()
 function writeConfig()
 {
     if (is_file($GLOBALS['config']['CONFIG_FILE']) && !isLoggedIn()) die('You are not authorized to alter config.'); // Only logged in user can alter config.
-    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; ';
+    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; ';
     $config .='$GLOBALS[\'timezone\']='.var_export($GLOBALS['timezone'],true).'; date_default_timezone_set('.var_export($GLOBALS['timezone'],true).'); $GLOBALS[\'title\']='.var_export($GLOBALS['title'],true).';';
     $config .= '$GLOBALS[\'redirector\']='.var_export($GLOBALS['redirector'],true).'; ';
     $config .= '$GLOBALS[\'disablesessionprotection\']='.var_export($GLOBALS['disablesessionprotection'],true).'; ';
