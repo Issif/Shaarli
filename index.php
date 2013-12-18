@@ -2068,7 +2068,7 @@ function install()
     }
 
 
-    if (!empty($_POST['setlogin']) && !empty($_POST['setpassword']))
+    if (!empty($_POST['setldapserver']) && !empty($_POST['setldapbasedn']) && !empty($_POST['setldapuser']) && !empty($_POST['setldapuserpwd']) && !empty($_POST['setldapsearchfilter']))
     {
         $tz = 'UTC';
         if (!empty($_POST['continent']) && !empty($_POST['city']))
@@ -2076,9 +2076,11 @@ function install()
                 $tz = $_POST['continent'].'/'.$_POST['city'];
         $GLOBALS['timezone'] = $tz;
         // Everything is ok, let's create config file.
-        $GLOBALS['login'] = $_POST['setlogin'];
-        $GLOBALS['salt'] = sha1(uniqid('',true).'_'.mt_rand()); // Salt renders rainbow-tables attacks useless.
-        $GLOBALS['hash'] = sha1($_POST['setpassword'].$GLOBALS['login'].$GLOBALS['salt']);
+        $GLOBALS['ldapserver'] = $_POST['setldapserver'];
+        $GLOBALS['ldapbasedn'] = $_POST['setldapbasedn'];
+        $GLOBALS['ldapuser'] = $_POST['setldapbasedn'];
+        $GLOBALS['ldapuserpwd'] = $_POST['setldapuserpwd'];
+        $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilter']; 
         $GLOBALS['title'] = (empty($_POST['title']) ? 'Shared links on '.htmlspecialchars(indexUrl()) : $_POST['title'] );
         writeConfig();
         echo '<script language="JavaScript">alert("Shaarli is now configured. Please enter your login/password and start shaaring your links !");document.location=\'?do=login\';</script>';
@@ -2240,7 +2242,7 @@ function processWS()
 function writeConfig()
 {
     if (is_file($GLOBALS['config']['CONFIG_FILE']) && !isLoggedIn()) die('You are not authorized to alter config.'); // Only logged in user can alter config.
-    $config='<?php $GLOBALS[\'login\']='.var_export($GLOBALS['login'],true).'; $GLOBALS[\'hash\']='.var_export($GLOBALS['hash'],true).'; $GLOBALS[\'salt\']='.var_export($GLOBALS['salt'],true).'; ';
+    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; ';
     $config .='$GLOBALS[\'timezone\']='.var_export($GLOBALS['timezone'],true).'; date_default_timezone_set('.var_export($GLOBALS['timezone'],true).'); $GLOBALS[\'title\']='.var_export($GLOBALS['title'],true).';';
     $config .= '$GLOBALS[\'redirector\']='.var_export($GLOBALS['redirector'],true).'; ';
     $config .= '$GLOBALS[\'disablesessionprotection\']='.var_export($GLOBALS['disablesessionprotection'],true).'; ';
