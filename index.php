@@ -275,11 +275,11 @@ function allIPs()
 function LDAP_authentication($user_login,$user_password) 
 {
     // Connection to ldap server
-    $link = ldap_connect($ldap_server, 389) or die("Can't connect to ldap server\n");
+    $link = ldap_connect($GLOBALS['ldapserver'], 389) or die("Can't connect to ldap server\n");
     // Options setting
     ldap_set_option($link, LDAP_OPT_PROTOCOL_VERSION, 3) or die("Can't change options\n");
     // Bind ldap server
-    if(ldap_bind($link, $ldap_manager, $ldap_manager_pwd) == false) die("Can't bind ldap server");
+    if(ldap_bind($link, $GLOBALS['ldapuser'], $GLOBALS['ldapuserpwd']) == false) die("Can't bind ldap server");
     
     // Search into ldap
     $search = ldap_search($link, $ldap_basedn, $filter);
