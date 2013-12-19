@@ -323,7 +323,7 @@ function LDAP_authentication($user_login,$user_password)
 function check_auth($login,$password)
 {
     $auth_attempt = LDAP_authentication($login,$password);
-    if ($auth_attempt) {   
+    if ($auth_attempt == true) {   
         // Login/password is correct.
         $_SESSION['uid'] = sha1(uniqid('',true).'_'.mt_rand()); // generate unique random number (different than phpsessionid)
         $_SESSION['ip']=allIPs();                // We store IP address(es) of the client to make sure session is not hijacked.
