@@ -126,30 +126,6 @@ function checkphpversion()
     }
 }
 
-// Checks if an update is available for Shaarli.
-// (at most once a day, and only for registered user.)
-// Output: '' = no new version.
-//         other= the available version.
-function checkUpdate()
-{
-    if (!isLoggedIn()) return ''; // Do not check versions for visitors.
-
-    // Get latest version number at most once a day.
-    if (!is_file($GLOBALS['config']['UPDATECHECK_FILENAME']) || (filemtime($GLOBALS['config']['UPDATECHECK_FILENAME'])<time()-($GLOBALS['config']['UPDATECHECK_INTERVAL'])))
-    {
-        $version=shaarli_version;
-        list($httpstatus,$headers,$data) = getHTTP('http://sebsauvage.net/files/shaarli_version.txt',2);
-        if (strpos($httpstatus,'200 OK')!==false) $version=$data;
-        // If failed, nevermind. We don't want to bother the user with that.
-        file_put_contents($GLOBALS['config']['UPDATECHECK_FILENAME'],$version); // touch file date
-    }
-    // Compare versions:
-    $newestversion=file_get_contents($GLOBALS['config']['UPDATECHECK_FILENAME']);
-    if (version_compare($newestversion,shaarli_version)==1) return $newestversion;
-    return '';
-}
-
-
 // -----------------------------------------------------------------------------------------------
 // Simple cache system (mainly for the RSS/ATOM feeds).
 
@@ -296,7 +272,8 @@ function allIPs()
 }
 
 // LDAP Authentication function
-function authenticate($user_login,$user_password) {
+function LDAP_authentication($user_login,$user_password) 
+{
     // Connection to ldap server
     $link = ldap_connect($ldap_server, 389) or die("Can't connect to ldap server\n");
     // Options setting
@@ -328,7 +305,7 @@ function authenticate($user_login,$user_password) {
     // Get DN of our found user
     $found_dn=$entry['dn']; 
 
-    // Try to bind the ldap with DN and user password
+    // Try to bind the ldap with found DN and user password
     $attempt = @ldap_bind($link, $found_dn, $user_password);
     if ($attempt) {
         // If bind is OK then unbind and close connection, return TRUE
@@ -345,9 +322,9 @@ function authenticate($user_login,$user_password) {
 // Check that user/password is correct.
 function check_auth($login,$password)
 {
-    $auth_attempt = LDAP_authentication($login,$password)
-    if ($login==$GLOBALS['login'] && $hash==$GLOBALS['hash'])
-    {   // Login/password is correct.
+    $auth_attempt = LDAP_authentication($login,$password);
+    if ($auth_attempt) {   
+        // Login/password is correct.
         $_SESSION['uid'] = sha1(uniqid('',true).'_'.mt_rand()); // generate unique random number (different than phpsessionid)
         $_SESSION['ip']=allIPs();                // We store IP address(es) of the client to make sure session is not hijacked.
         $_SESSION['username']=$login;
@@ -677,7 +654,6 @@ class pageBuilder
     private function initialize()
     {
         $this->tpl = new RainTPL;
-        $this->tpl->assign('newversion',checkUpdate());
         $this->tpl->assign('feedurl',htmlspecialchars(indexUrl()));
         $searchcrits=''; // Search criteria
         if (!empty($_GET['searchtags'])) $searchcrits.='&searchtags='.urlencode($_GET['searchtags']);
@@ -1385,34 +1361,6 @@ function renderPage()
         $PAGE->assign('pageabsaddr',indexUrl());
         $PAGE->renderPage('tools');
         exit;
-    }
-
-    // -------- User wants to change his/her password.
-    if (isset($_SERVER["QUERY_STRING"]) && startswith($_SERVER["QUERY_STRING"],'do=changepasswd'))
-    {
-        if ($GLOBALS['config']['OPEN_SHAARLI']) die('You are not supposed to change a password on an Open Shaarli.');
-        if (!empty($_POST['setpassword']) && !empty($_POST['oldpassword']))
-        {
-            if (!tokenOk($_POST['token'])) die('Wrong token.'); // Go away !
-
-            // Make sure old password is correct.
-            $oldhash = sha1($_POST['oldpassword'].$GLOBALS['login'].$GLOBALS['salt']);
-            if ($oldhash!=$GLOBALS['hash']) { echo '<script language="JavaScript">alert("The old password is not correct.");document.location=\'?do=changepasswd\';</script>'; exit; }
-            // Save new password
-            $GLOBALS['salt'] = sha1(uniqid('',true).'_'.mt_rand()); // Salt renders rainbow-tables attacks useless.
-            $GLOBALS['hash'] = sha1($_POST['setpassword'].$GLOBALS['login'].$GLOBALS['salt']);
-            writeConfig();
-            echo '<script language="JavaScript">alert("Your password has been changed.");document.location=\'?do=tools\';</script>';
-            exit;
-        }
-        else // show the change password form.
-        {
-            $PAGE = new pageBuilder;
-            $PAGE->assign('linkcount',count($LINKSDB));
-            $PAGE->assign('token',getToken());
-            $PAGE->renderPage('changepassword');
-            exit;
-        }
     }
 
     // -------- User wants to change configuration
