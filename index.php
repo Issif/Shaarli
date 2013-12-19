@@ -2073,7 +2073,7 @@ function install()
         // Everything is ok, let's create config file.
         $GLOBALS['ldapserver'] = $_POST['setldapserver'];
         $GLOBALS['ldapbasedn'] = $_POST['setldapbasedn'];
-        $GLOBALS['ldapuser'] = $_POST['setldapbasedn'];
+        $GLOBALS['ldapuser'] = $_POST['setldapuser'];
         $GLOBALS['ldapuserpwd'] = $_POST['setldapuserpwd'];
         $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilter']; 
         $GLOBALS['title'] = (empty($_POST['title']) ? 'Shared links on '.htmlspecialchars(indexUrl()) : $_POST['title'] );
