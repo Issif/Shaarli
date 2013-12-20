@@ -1,6 +1,7 @@
 <?php
-// Shaarli 0.0.41 beta - Shaare your links...
-// LDAP authentication fork
+// ShaarliLDAP 0.0.110 beta by Issif (Thomas Labarussias)
+// This a fork of the amazing SebSauvage's shaarli.
+//
 // The personal, minimalist, super-fast, no-database delicious clone. By sebsauvage.net
 // http://sebsauvage.net/wiki/doku.php?id=php:shaarli
 // Licence: http://www.opensource.org/licenses/zlib-license.php
@@ -285,7 +286,7 @@ function LDAP_authentication($user_login,$user_password)
     $search = ldap_search($link, $GLOBALS['ldapbasedn'], $GLOBALS['ldapsearchfilter'].$user_login);
     if (!$search) {
         echo("Can't search in ldap\n");
-        echo("msg:'".ldap_error($link)."'\n");
+        echo("msg: '".ldap_error($link)."'\n");
         ldap_close($link);
         exit();
     	}
@@ -341,7 +342,7 @@ function isLoggedIn()
 {
     if ($GLOBALS['config']['OPEN_SHAARLI']) return true;
 
-    if (!isset($GLOBALS['login'])) return false;  // Shaarli is not configured yet.
+    //if (!isset($GLOBALS['login'])) return false;  // Shaarli is not configured yet.
 
     // If session does not exist on server side, or IP address has changed, or session has expired, logout.
     if (empty($_SESSION['uid']) || ($GLOBALS['disablesessionprotection']==false && $_SESSION['ip']!=allIPs()) || time()>=$_SESSION['expires_on'])
@@ -2075,7 +2076,8 @@ function install()
         $GLOBALS['ldapbasedn'] = $_POST['setldapbasedn'];
         $GLOBALS['ldapuser'] = $_POST['setldapuser'];
         $GLOBALS['ldapuserpwd'] = $_POST['setldapuserpwd'];
-        $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilter']; 
+        $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilter'];
+        $GLOBALS['salt'] = sha1(uniqid('',true).'_'.mt_rand());
         $GLOBALS['title'] = (empty($_POST['title']) ? 'Shared links on '.htmlspecialchars(indexUrl()) : $_POST['title'] );
         writeConfig();
         echo '<script language="JavaScript">alert("Shaarli is now configured. Please enter your login/password and start shaaring your links !");document.location=\'?do=login\';</script>';
@@ -2237,9 +2239,10 @@ function processWS()
 function writeConfig()
 {
     if (is_file($GLOBALS['config']['CONFIG_FILE']) && !isLoggedIn()) die('You are not authorized to alter config.'); // Only logged in user can alter config.
-    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; ';
+    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; $GLOBALS[\'ldapsearchfilter\']='.var_export($GLOBALS['ldapsearchfilter'],true).'; ';
     $config .='$GLOBALS[\'timezone\']='.var_export($GLOBALS['timezone'],true).'; date_default_timezone_set('.var_export($GLOBALS['timezone'],true).'); $GLOBALS[\'title\']='.var_export($GLOBALS['title'],true).';';
     $config .= '$GLOBALS[\'redirector\']='.var_export($GLOBALS['redirector'],true).'; ';
+    $config .= '$GLOBALS[\'salt\']='.var_export($GLOBALS['salt'],true).'; ';
     $config .= '$GLOBALS[\'disablesessionprotection\']='.var_export($GLOBALS['disablesessionprotection'],true).'; ';
     $config .= '$GLOBALS[\'disablejquery\']='.var_export($GLOBALS['disablejquery'],true).'; ';
     $config .= '$GLOBALS[\'privateLinkByDefault\']='.var_export($GLOBALS['privateLinkByDefault'],true).'; ';
