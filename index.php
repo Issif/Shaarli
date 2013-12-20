@@ -2239,7 +2239,11 @@ function processWS()
 function writeConfig()
 {
     if (is_file($GLOBALS['config']['CONFIG_FILE']) && !isLoggedIn()) die('You are not authorized to alter config.'); // Only logged in user can alter config.
+<<<<<<< HEAD
     $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; $GLOBALS[\'ldapsearchfilter\']='.var_export($GLOBALS['ldapsearchfilter'],true).'; ';
+=======
+    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; $GLOBALS[\'ldapusearchfilter\']='.var_export($GLOBALS['ldapsearchfilter'],true).'; ';
+>>>>>>> d3dab75e0b1ce631217333690dfba0a30a25d8a4
     $config .='$GLOBALS[\'timezone\']='.var_export($GLOBALS['timezone'],true).'; date_default_timezone_set('.var_export($GLOBALS['timezone'],true).'); $GLOBALS[\'title\']='.var_export($GLOBALS['title'],true).';';
     $config .= '$GLOBALS[\'redirector\']='.var_export($GLOBALS['redirector'],true).'; ';
     $config .= '$GLOBALS[\'salt\']='.var_export($GLOBALS['salt'],true).'; ';
