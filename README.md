@@ -1,17 +1,19 @@
-ShaarliLDAP by Issif (Thomas Labarussias - issif_github@gadz.org)
+ShaarliLDAP 
 ------------------------------------------------------------------------------
-See above for licence
+_See above for licence_
 
 This version of Shaarli works with a LDAP as authentication method.
 
 See http://sebsauvage.net/wiki/doku.php?id=php:shaarli for install method,
 everything is same except install parameters :
 
-* LDAP Server: IP or URL of your LDAP
-* LDAP BaseDN: your BaseDN for LDAP Bind
-* LDAP User: DN of a user with right to read	
-* LDAP User Password: Password of the user
-* LDAP Search Filter: A filter for search (still in beta)
+![LDAP Settings](https://raw.github.com/Issif/ShaarliLDAP/master/images/ldap_settings.png)
+
+* **LDAP Server**: IP or URL of your LDAP
+* **LDAP BaseDN**: your BaseDN for LDAP Bind
+* **LDAP User**: DN of a user with right to read	
+* **LDAP User Password**: Password of the user
+* **LDAP Search Filter**: A filter for search (still in beta)
 
 For the moment, the script add entered login at filter's end 
 (ex :cn=$user_login)
@@ -33,10 +35,9 @@ freely, subject to the following restrictions:
      claim that you wrote the original software. If you use this software
      in a product, an acknowledgment in the product documentation would
      be appreciated but is not required.
-
   2. Altered source versions must be plainly marked as such, and must
      not be misrepresented as being the original software.
-
   3. This notice may not be removed or altered from any source distribution.
+
 ------------------------------------------------------------------------------
 Thanks to SebSauvage for his tools.
