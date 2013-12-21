@@ -283,7 +283,7 @@ function LDAP_authentication($user_login,$user_password)
     if(ldap_bind($link, $GLOBALS['ldapuser'], $GLOBALS['ldapuserpwd']) == false) die("Can't bind ldap server");
     
     // Search into ldap
-    $search = ldap_search($link, $GLOBALS['ldapbasedn'], $GLOBALS['ldapsearchfilter'].$user_login);
+    $search = ldap_search($link, $GLOBALS['ldapbasedn'], $GLOBALS['ldapsearchfilterbegin'].$user_login.$GLOBALS['ldapsearchfilterbegin']);
     if (!$search) {
         echo("Can't search in ldap\n");
         echo("msg: '".ldap_error($link)."'\n");
@@ -2076,7 +2076,8 @@ function install()
         $GLOBALS['ldapbasedn'] = $_POST['setldapbasedn'];
         $GLOBALS['ldapuser'] = $_POST['setldapuser'];
         $GLOBALS['ldapuserpwd'] = $_POST['setldapuserpwd'];
-        $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilterbegin'].$_POST'[setldapsearchfilterbegin'];
+        $GLOBALS['ldapsearchfilterbegin'] = $_POST['setldapsearchfilterbegin'];
+        $GLOBALS['ldapsearchfilterend'] = $_POST['setldapsearchfilterend'];
         $GLOBALS['salt'] = sha1(uniqid('',true).'_'.mt_rand());
         $GLOBALS['title'] = (empty($_POST['title']) ? 'Shared links on '.htmlspecialchars(indexUrl()) : $_POST['title'] );
         writeConfig();
@@ -2239,7 +2240,7 @@ function processWS()
 function writeConfig()
 {
     if (is_file($GLOBALS['config']['CONFIG_FILE']) && !isLoggedIn()) die('You are not authorized to alter config.'); // Only logged in user can alter config.
-    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; $GLOBALS[\'ldapsearchfilter\']='.var_export($GLOBALS['ldapsearchfilter'],true).'; ';
+    $config='<?php $GLOBALS[\'ldapserver\']='.var_export($GLOBALS['ldapserver'],true).'; $GLOBALS[\'ldapbasedn\']='.var_export($GLOBALS['ldapbasedn'],true).'; $GLOBALS[\'ldapuser\']='.var_export($GLOBALS['ldapuser'],true).'; $GLOBALS[\'ldapuserpwd\']='.var_export($GLOBALS['ldapuserpwd'],true).'; $GLOBALS[\'ldapsearchfilterbegin\']='.var_export($GLOBALS['ldapsearchfilterbegin'],true).'; $GLOBALS[\'ldapsearchfilterend\']='.var_export($GLOBALS['ldapsearchfilterend'],true).'; ';
     $config .='$GLOBALS[\'timezone\']='.var_export($GLOBALS['timezone'],true).'; date_default_timezone_set('.var_export($GLOBALS['timezone'],true).'); $GLOBALS[\'title\']='.var_export($GLOBALS['title'],true).';';
     $config .= '$GLOBALS[\'redirector\']='.var_export($GLOBALS['redirector'],true).'; ';
     $config .= '$GLOBALS[\'salt\']='.var_export($GLOBALS['salt'],true).'; ';
