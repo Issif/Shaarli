@@ -13,10 +13,11 @@ everything is same except install parameters :
 * **LDAP BaseDN**: your BaseDN for LDAP Bind
 * **LDAP User**: DN of a user with right to read	
 * **LDAP User Password**: Password of the user
-* **LDAP Search Filter**: A filter for search (still in beta)
+* **LDAP Search Filter Begin**: Beginning of the Search Filter
+* **LDAP Search Filter End** : End of the Search Filter
 
-For the moment, the script add entered login at filter's end 
-(ex :cn=$user_login)
+The search filter is in 2 parts because $login entered by user will be insert
+between two parts.
 
 ------------------------------------------------------------------------------
 Shaarli is distributed under the zlib/libpng License:
