@@ -2064,7 +2064,7 @@ function install()
     }
 
 
-    if (!empty($_POST['setldapserver']) && !empty($_POST['setldapbasedn']) && !empty($_POST['setldapuser']) && !empty($_POST['setldapuserpwd']) && !empty($_POST['setldapsearchfilter']))
+    if (!empty($_POST['setldapserver']) && !empty($_POST['setldapbasedn']) && !empty($_POST['setldapuser']) && !empty($_POST['setldapuserpwd']) && !empty($_POST['setldapsearchfilterbegin']))
     {
         $tz = 'UTC';
         if (!empty($_POST['continent']) && !empty($_POST['city']))
@@ -2076,7 +2076,7 @@ function install()
         $GLOBALS['ldapbasedn'] = $_POST['setldapbasedn'];
         $GLOBALS['ldapuser'] = $_POST['setldapuser'];
         $GLOBALS['ldapuserpwd'] = $_POST['setldapuserpwd'];
-        $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilter'];
+        $GLOBALS['ldapsearchfilter'] = $_POST['setldapsearchfilterbegin'].$_POST'[setldapsearchfilterbegin'];
         $GLOBALS['salt'] = sha1(uniqid('',true).'_'.mt_rand());
         $GLOBALS['title'] = (empty($_POST['title']) ? 'Shared links on '.htmlspecialchars(indexUrl()) : $_POST['title'] );
         writeConfig();
