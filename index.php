@@ -283,7 +283,7 @@ function LDAP_authentication($user_login,$user_password)
     if(ldap_bind($link, $GLOBALS['ldapuser'], $GLOBALS['ldapuserpwd']) == false) die("Can't bind ldap server");
     
     // Search into ldap
-    $search = ldap_search($link, $GLOBALS['ldapbasedn'], $GLOBALS['ldapsearchfilterbegin'].$user_login.$GLOBALS['ldapsearchfilterbegin']);
+    $search = ldap_search($link, $GLOBALS['ldapbasedn'], $GLOBALS['ldapsearchfilterbegin'].$user_login.$GLOBALS['ldapsearchfilterend']);
     if (!$search) {
         echo("Can't search in ldap\n");
         echo("msg: '".ldap_error($link)."'\n");
